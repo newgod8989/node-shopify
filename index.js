@@ -2,10 +2,18 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const axios = require('axios');
+const bodyParser = require("body-parser");
 
-app.get('/', (req, res) => {
-    console.log("Server is running on port 5000");
+app.use(express.static(__dirname + '/'));
+app.use(bodyParser.urlencoded({extend:true}));
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'ejs');
+app.set('views', __dirname);
+
+app.get('/', function(req, res){
+    res.render("index");
 });
+
 
 app.get('/product', (req, res) => {
 
@@ -20,7 +28,8 @@ app.get('/product', (req, res) => {
 
     axios(config)
     .then(function (response) {
-        res.status(200).send(response.data);
+        res.render("index", { products: response.data.products });
+
     })
     .catch(function (error) {
         console.log(error);
